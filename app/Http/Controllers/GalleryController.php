@@ -194,6 +194,9 @@ class GalleryController extends Controller
                 $imagepath .= "," . $val;
             }
         }
+        if (strpos( $imagepath, ']') === false) {
+            $imagepath .= ']';
+        }
 
        // print_r($imagepath);
         $image_updated = Gallery::where('id', $id)->update(['images' => $imagepath]);
