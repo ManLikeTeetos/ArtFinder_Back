@@ -38,7 +38,8 @@ class GalleryController extends Controller
             $gallery->save();
             if ($gallery) return ["message" => "Successfully Updated ", "value" => "1"];
             else return ["message" => "Could not update gallery information", "value" => "0"];
-        } else {
+        }
+        else {
             $galleryToUpdate = Gallery::find($req->input('id'));
             if ($galleryToUpdate) {
                 $galleryToUpdate->name = $req->input('name');
@@ -95,8 +96,13 @@ class GalleryController extends Controller
     function getGallery(Request $req)
     {
         $id = $req->query('id');
+        $location = $req->query('location'); // Get the location from the request query parameters
        if(empty($id)) {
-           $result = Gallery::all();
+           if (!empty($location)) {
+               $result = Gallery::where('location', 'LIKE', "%{$location}%")->get();
+           } else {
+               $result = Gallery::all();
+           }
        }else{
            $result = Gallery::where([
                'id'=>$id
