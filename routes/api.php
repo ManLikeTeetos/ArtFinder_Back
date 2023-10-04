@@ -20,10 +20,17 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('addGallery',[GalleryController::class,'addGallery'])->middleware('cors');
+///Get Methods
 Route::get('getGallery',[GalleryController::class,'getGallery'])->middleware('cors');
 Route::get('getGalleryAgent',[GalleryController::class,'getGalleryAgent'])->middleware('cors');
 Route::get('deleteImage',[GalleryController::class,'deleteImage'])->middleware('cors');
 Route::get('getUser',[UserController::class,'getUser'])->middleware('cors');
+Route::get('getUser_upd',[UserController::class,'getUser_upd'])->middleware('cors');
+Route::get('checkUserExists',[UserController::class,'checkUser_exist'])->middleware('cors');
+
+///Post Methods
 Route::post('addUser',[UserController::class,'addUser'])->middleware('cors');
 Route::post('signIn',[UserController::class,'signIn'])->middleware('cors');
+Route::post('updateUser',[UserController::class,'updateUser'])->middleware('cors');
+Route::post('addGallery',[GalleryController::class,'addGallery'])->middleware('cors');
+Route::post('forgotpass',[UserController::class,'forgotpass'])->middleware('cors');

@@ -6,6 +6,7 @@ use App\Models\Gallery;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
+
 ini_set("display_errors", "on");
 
 class GalleryController extends Controller
@@ -213,5 +214,22 @@ class GalleryController extends Controller
             // No rows were affected
             return response()->json(["error" => "No records found or no changes made."]);
         }
+    }
+
+    function updateUserGallery($session_username, $username )
+    {
+        // Find the user based on the provided username
+        $gallery_det = Gallery::where('userid', $session_username)->first();
+
+        if (!$gallery_det) {
+            return ["error" => "Gallery details not found"];
+        }
+
+        // Update the galleries associated with the user's old username to use the new username as userid
+        // Update the galleries associated with the user's old username to use the new username as userid
+        Gallery::where('userid', $session_username)
+            ->update(['userid' => $username]);
+
+        return true;
     }
 }
