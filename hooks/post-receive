@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# Define the source and destination directories
+SOURCE_DIR="/home2/artfinde/artfinder_back"  # Adjust to your Laravel repo path
+DESTINATION_DIR="/home2/artfinde/artfinder_back/hooks/post-receive"
+
+# Navigate to the Laravel project directory
+cd $SOURCE_DIR
+
+# Install Composer dependencies and run Laravel migrations and seeders
+composer install
+php artisan migrate --seed
+
+# Copy the Laravel application to the destination directory
+cp -r * $DESTINATION_DIR

@@ -1,8 +1,4 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/artfinde/public_html/backend/
-    - git archive --format=tar.gz --output=$DEPLOYPATH/repository.tar.gz HEAD
-    - cd $DEPLOYPATH
-    - tar -xzf repository.tar.gz
-    - rm repository.tar.gz
+    - /path/to/your/repo.git/hooks/post-receive
