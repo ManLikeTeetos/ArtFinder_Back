@@ -2,7 +2,7 @@
 
 # Define the source and destination directories
 SOURCE_DIR="/home2/artfinde/artfinder_back"  # Adjust to your Laravel repo path
-DESTINATION_DIR="/home2/artfinde/artfinder_back/hooks/post-receive"
+DESTINATION_DIR="/home2/artfinde/artfinder_back/public_html/backend"
 
 # Navigate to the Laravel project directory
 cd $SOURCE_DIR
