@@ -2,27 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Gallery;
+use App\Models\Artist;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
-
-//ini_set("display_errors", "on");
-
-class GalleryController extends Controller
+class ArtistController extends Controller
 {
     //
-    function addGallery(Request $req)
+    function addArtist(Request $req)
     {
 
-        $gallery = new Gallery;
-        $gallery->name = $req->input('name');
-        $gallery->about = $req->input('about');
-        $gallery->opening = $req->input('opening');
-        $gallery->location = $req->input('location');
-        $gallery->requirements = $req->input('requirements');
-        $gallery->display = $req->file('display') ? $req->file('display')->store('public') : "";
-        $gallery->banner = $req->file('banner') ? $req->file('banner')->store('public') : "";
+        $artist = new Artist;
+        $artist->name = $req->input('name');
+        $artist->about = $req->input('about');
+        $artist->location = $req->input('location');
+        $artist->contact = $req->input('contact');
+        $artist->display = $req->file('display') ? $req->file('display')->store('public') : "";
+        $artist->banner = $req->file('banner') ? $req->file('banner')->store('public') : "";
 
         $images = $req->file('images');
         $imagePaths = [];
@@ -33,39 +29,38 @@ class GalleryController extends Controller
                 $imagePaths[] = $path;
             }
         }
-        $gallery->images = json_encode($imagePaths);
-        // var_dump($gallery);
+        $artist->images = json_encode($imagePaths);
+        // var_dump($artist);
         if (empty($req->input('id'))) {
-            $gallery->save();
-            if ($gallery) return ["message" => "Successfully Updated ", "value" => "1"];
-            else return ["message" => "Could not update gallery information", "value" => "0"];
+            $artist->save();
+            if ($artist) return ["message" => "Successfully Updated ", "value" => "1"];
+            else return ["message" => "Could not update artist information", "value" => "0"];
         }
         else {
-            $galleryToUpdate = Gallery::find($req->input('id'));
-            if ($galleryToUpdate) {
-                $galleryToUpdate->name = $req->input('name');
-                $galleryToUpdate->about = $req->input('about');
-                $galleryToUpdate->opening = $req->input('opening');
-                $galleryToUpdate->location = $req->input('location');
-                $galleryToUpdate->requirements = $req->input('requirements');
+            $artistToUpdate = Artist::find($req->input('id'));
+            if ($artistToUpdate) {
+                $artistToUpdate->name = $req->input('name');
+                $artistToUpdate->about = $req->input('about');
+                $artistToUpdate->location = $req->input('location');
+                $artistToUpdate->contact = $req->input('contact');
 
                 // Update display image if provided
                 if ($req->file('display')) {
-                    Storage::delete($galleryToUpdate->display); // Delete previous display image
-                    $galleryToUpdate->display = $req->file('display')->store('public');
+                    Storage::delete($artistToUpdate->display); // Delete previous display image
+                    $artistToUpdate->display = $req->file('display')->store('public');
                 }
 
                 // Update banner image if provided
                 if ($req->file('banner')) {
-                    Storage::delete($galleryToUpdate->banner); // Delete previous banner image
-                    $galleryToUpdate->banner = $req->file('banner')->store('public');
+                    Storage::delete($artistToUpdate->banner); // Delete previous banner image
+                    $artistToUpdate->banner = $req->file('banner')->store('public');
                 }
 
                 // Update images array if provided
                 // Update the images if new ones are provided
                 if ($req->file('images')) {
                     // Get the paths of the previous images
-                    $previousImages = json_decode($galleryToUpdate->images, true);
+                    $previousImages = json_decode($artistToUpdate->images, true);
 
                     // Store the new images and combine them with the previous images
                     $newImages = $req->file('images');
@@ -79,53 +74,53 @@ class GalleryController extends Controller
 
                     // Combine the new images with the previous images
                     if(!empty($previousImages)) {
-                        $galleryToUpdate->images = json_encode(array_merge($previousImages, $imagePaths));
+                        $artistToUpdate->images = json_encode(array_merge($previousImages, $imagePaths));
                     }else{
-                        $galleryToUpdate->images = json_encode($imagePaths);
+                        $artistToUpdate->images = json_encode($imagePaths);
                     }
                 }
 
-                $galleryToUpdate->save();
+                $artistToUpdate->save();
 
                 return ["message" => "Successfully Updated", "value" => "1"];
             } else {
-                return ["message" => "Gallery not found", "value" => "0"];
+                return ["message" => "Artist not found", "value" => "0"];
             }
-         }
+        }
     }
 
-    function getGallery(Request $req)
+    function getArtist(Request $req)
     {
         $id = $req->query('id');
         $location = $req->query('location'); // Get the location from the request query parameters
         if(empty($location)) $location = "Lagos";
-       if(empty($id)) {
-           if (!empty($location)) {
-               $result = Gallery::where('location', 'LIKE', "%{$location}%")->get();
-           } else {
-               $result = Gallery::all();
-           }
-       }else{
-           $result = Gallery::where([
-               'id'=>$id
+        if(empty($id)) {
+            if (!empty($location)) {
+                $result = Artist::where('location', 'LIKE', "%{$location}%")->get();
+            } else {
+                $result = Artist::all();
+            }
+        }else{
+            $result = Artist::where([
+                'id'=>$id
 
-           ])->get();
-       }
+            ])->get();
+        }
 
         $res_array = json_decode($result, true);
         foreach ($res_array as $res_key => $res_val) {
             foreach ($res_val as $key => $val) {
                 if ($key == "banner" || $key == "display") {
-                    //$res[$reskey][$key] ="http://localhost:8000/".$value;
+                    //$res[$reskey][$key] ="https://api.artfinderx.com/".$value;
                     $val = str_ireplace("public", "storage", $val);
-                    $res_array[$res_key][$key] = "http://localhost:8000/" . $val;
+                    $res_array[$res_key][$key] = "https://api.artfinderx.com/" . $val;
                 } elseif ($key == "images") {
                     $images = json_decode($val, true);
                     $publicImageUrls = [];
                     if (!empty($images)) {
                         foreach ($images as $image) {
                             $publicUrl = str_ireplace("public", "storage", $image);
-                            $publicImageUrls[] = "http://localhost:8000/" . $publicUrl;
+                            $publicImageUrls[] = "https://api.artfinderx.com/" . $publicUrl;
                         }
                     }
                     $res_array[$res_key][$key] = $publicImageUrls;
@@ -136,13 +131,13 @@ class GalleryController extends Controller
         return $result;
     }
 
-    function getGalleryAgent(Request $req)
+    function getArtistAgent(Request $req)
     {
         $userid = $req->query('username');
         if(empty($userid)) {
-           return "";
+            return "";
         }else{
-            $result = Gallery::where([
+            $result = Artist::where([
                 'userid'=>$userid
 
             ])->get();
@@ -152,16 +147,16 @@ class GalleryController extends Controller
         foreach ($res_array as $res_key => $res_val) {
             foreach ($res_val as $key => $val) {
                 if ($key == "banner" || $key == "display") {
-                    //$res[$reskey][$key] ="http://localhost:8000/".$value;
+                    //$res[$reskey][$key] ="https://api.artfinderx.com/".$value;
                     $val = str_ireplace("public", "storage", $val);
-                    $res_array[$res_key][$key] = "http://localhost:8000/" . $val;
+                    $res_array[$res_key][$key] = "https://api.artfinderx.com/" . $val;
                 } elseif ($key == "images") {
                     $images = json_decode($val, true);
                     $publicImageUrls = [];
                     if (!empty($images)) {
                         foreach ($images as $image) {
                             $publicUrl = str_ireplace("public", "storage", $image);
-                            $publicImageUrls[] = "http://localhost:8000/" . $publicUrl;
+                            $publicImageUrls[] = "https://api.artfinderx.com/" . $publicUrl;
                         }
                     }
                     $res_array[$res_key][$key] = $publicImageUrls;
@@ -172,12 +167,12 @@ class GalleryController extends Controller
         return $result;
     }
 
-    function deleteImage(Request $req){
+    function deleteImageArtist(Request $req){
         $id = $req->input('id');
         $image_url = $req->input('image');
         $image_url = explode("storage/",$image_url);
         $image_del = $image_url[1];
-        $images = Gallery::select('images')->where([
+        $images = Artist::select('images')->where([
             'id'=>$id
         ])->get();
 
@@ -186,15 +181,15 @@ class GalleryController extends Controller
         $xi = 0;
         //print_r($image_loop);
         for($xi=0; $xi < count($image_loop); $xi++){
-             $val = $image_loop[$xi];
-             $saved_img = substr($val, strpos($val, '/') + 1);
-             $saved_img = explode('"',$saved_img);
-             $saved_img = $saved_img[0];
+            $val = $image_loop[$xi];
+            $saved_img = substr($val, strpos($val, '/') + 1);
+            $saved_img = explode('"',$saved_img);
+            $saved_img = $saved_img[0];
             if($image_del == $saved_img){
-              unset($image_loop[$xi]);
-          }
+                unset($image_loop[$xi]);
+            }
         }
-       // print_r($image_loop);
+        // print_r($image_loop);
         $xr = count($image_loop);
         $imagepath = $image_loop[0];
         foreach ($image_loop as $key => $val){
@@ -206,8 +201,8 @@ class GalleryController extends Controller
             $imagepath .= ']';
         }
 
-       // print_r($imagepath);
-        $image_updated = Gallery::where('id', $id)->update(['images' => $imagepath]);
+        // print_r($imagepath);
+        $image_updated = Artist::where('id', $id)->update(['images' => $imagepath]);
         if ($image_updated > 0) {
             // Update operation was successful
             return response()->json(["message" => "Update successful!"]);
@@ -217,18 +212,18 @@ class GalleryController extends Controller
         }
     }
 
-    function updateUserGallery($session_username, $username )
+    function updateUserArtist($session_username, $username )
     {
         // Find the user based on the provided username
-        $gallery_det = Gallery::where('userid', $session_username)->first();
+        $artist_det = Artist::where('userid', $session_username)->first();
 
-        if (!$gallery_det) {
-            return ["error" => "Gallery details not found"];
+        if (!$artist_det) {
+            return ["error" => "Artist details not found"];
         }
 
         // Update the galleries associated with the user's old username to use the new username as userid
         // Update the galleries associated with the user's old username to use the new username as userid
-        Gallery::where('userid', $session_username)
+        Artist::where('userid', $session_username)
             ->update(['userid' => $username]);
 
         return true;
