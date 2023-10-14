@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\GalleryController;
+use App\Http\Controllers\ArtistController;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -117,12 +118,19 @@ class UserController extends Controller
         ///update gallery is an agent
         if($user_det->agent == "Y") {
             $gallery = new GalleryController();
-            $response = $gallery->updateUserGallery($req->session_username, $user_det->username );
+            $artist = new ArtistController();
+            $response_gallery = $gallery->updateUserGallery($req->session_username, $user_det->username );
+            $response_artist = $artist->updateUserArtist($req->session_username, $user_det->username );
 
 
-            if (!$response) {
+            if (!$response_gallery) {
                 return ["error"=>"Gallery userid was not updated successfully"];
             }
+            if (!$response_artist) {
+                return ["error"=>"Artist userid was not updated successfully"];
+            }
+
+
         }
 
 
