@@ -111,16 +111,16 @@ class ArtistController extends Controller
         foreach ($res_array as $res_key => $res_val) {
             foreach ($res_val as $key => $val) {
                 if ($key == "banner" || $key == "display") {
-                    //$res[$reskey][$key] ="https://api.artfinderx.com/".$value;
+                    //$res[$reskey][$key] ="https://api.artpathfinder.com/".$value;
                     $val = str_ireplace("public", "storage", $val);
-                    $res_array[$res_key][$key] = "https://api.artfinderx.com/" . $val;
+                    $res_array[$res_key][$key] = "https://api.artpathfinder.com/" . $val;
                 } elseif ($key == "images") {
                     $images = json_decode($val, true);
                     $publicImageUrls = [];
                     if (!empty($images)) {
                         foreach ($images as $image) {
                             $publicUrl = str_ireplace("public", "storage", $image);
-                            $publicImageUrls[] = "https://api.artfinderx.com/" . $publicUrl;
+                            $publicImageUrls[] = "https://api.artpathfinder.com/" . $publicUrl;
                         }
                     }
                     $res_array[$res_key][$key] = $publicImageUrls;
@@ -147,16 +147,16 @@ class ArtistController extends Controller
         foreach ($res_array as $res_key => $res_val) {
             foreach ($res_val as $key => $val) {
                 if ($key == "banner" || $key == "display") {
-                    //$res[$reskey][$key] ="https://api.artfinderx.com/".$value;
+                    //$res[$reskey][$key] ="https://api.artpathfinder.com/".$value;
                     $val = str_ireplace("public", "storage", $val);
-                    $res_array[$res_key][$key] = "https://api.artfinderx.com/" . $val;
+                    $res_array[$res_key][$key] = "https://api.artpathfinder.com/" . $val;
                 } elseif ($key == "images") {
                     $images = json_decode($val, true);
                     $publicImageUrls = [];
                     if (!empty($images)) {
                         foreach ($images as $image) {
                             $publicUrl = str_ireplace("public", "storage", $image);
-                            $publicImageUrls[] = "https://api.artfinderx.com/" . $publicUrl;
+                            $publicImageUrls[] = "https://api.artpathfinder.com/" . $publicUrl;
                         }
                     }
                     $res_array[$res_key][$key] = $publicImageUrls;
